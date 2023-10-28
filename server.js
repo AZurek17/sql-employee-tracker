@@ -16,4 +16,7 @@ const db = mysql.createConnection(
 
 // query database
 
+db.query(`'SELECT * FROM departments`, function (err, results){
+    console.log(results);
+});
 
