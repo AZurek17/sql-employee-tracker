@@ -5,6 +5,7 @@
  * npm - https://www.npmjs.com/
  * inquirer - https://www.npmjs.com/package/inquirer
  * table-printer - https://www.npmjs.com/package/console-table-printer
+ * mysql2 - https://www.npmjs.com/package/mysql2
 
  ## Description
 

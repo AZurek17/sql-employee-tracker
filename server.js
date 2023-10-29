@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
-const cTable = require('console-table');
+const cTable = require('console.table');
 
 
 //AddDepartment questions
@@ -38,7 +38,10 @@ function addRole() {
         {
             type: "list",
             name: "department",
-            message: "Pick a department"
+            message: "Pick a department",
+            choices: [
+                db.query('SHOW')
+            ]
         }
      ])
      .then((response) => {
@@ -67,12 +70,12 @@ function addEmployee() {
             message: "Enter last name"
         },
         {
-            type: "input",
+            type: "list",
             name: "employee_role",
             message: "Enter employe role"
         },
         {
-            type: "input",
+            type: "list",
             name: "employee_id",
             message: "Enter employe manager"
         }
@@ -88,24 +91,6 @@ function addEmployee() {
     init();
 };
 
-//start questions
-const questions = [
-    {
-        type: "list",
-        message: "What would you like to do?",
-        name: "selected",
-        choices: [
-            "view all departments",
-            "view all roles",
-            "view all employees",
-            "add a department",
-            "add a role",
-            "add an employee",
-            "update employee role"
-        ]
-    }
-];
-
 //connect to database
 const db = mysql.createConnection(
     {
@@ -117,42 +102,67 @@ const db = mysql.createConnection(
     console.log('connected to company_db')
 );
 
+//-------------------
 function init() {
-    console.log("");
-    inquirer
-    .prompt (questions)
+  inquirer
+    .prompt ([
+        {
+            type: "list",
+            message: "What would you like to do?",
+            name: "selected",
+            choices: [
+                "view all departments",
+                "view all roles",
+                "view all employees",
+                "add a department",
+                "add a role",
+                "add an employee",
+                "update employee role"
+            ],
+        },
+    ])
     .then((response) => {
-        //console.log(response)
+        // console.log(response)
+       //const answer = "";
 
-        if (response === "view all departments") {
+        if ((response.selected) === "view all departments") {
             db.query(`SELECT * FROM department`, function (err, results){
+                if (err){
+                    console.log(err);
+                }
                 console.table(results);
                 init();
-            })
+            });
         }
-        else if (response === "view all roles") {
+        else if ((response.selected) === "view all roles") {
             db.query(`SELECT * FROM role`, function (err, results){
-                console.log(results);
-                init();
+                if (err){
+                    console.log(err);
+                }
+                console.log(results)
+                init()
             })
         }
-        else if (response === "view all employees") {
+        else if ((response.selected) === "view all employees") {
+            if (err){
+                console.log(err);
+            }
             db.query(`SELECT * FROM employee`, function (err, results){
-                console.table(results);
-                init;
+                console.table(results)
+                init()
             })
         }
-        else if (response === "add a department") {
-            addDepartment();
+        else if ((response.selected) === "add a department") {
+            addDepartment()
         }
-        else if (response === "add a role") {
-            addRole();
+        else if ((response.selected) === "add a role") {
+            addRole()
         }
-        else if (response === "add an employee") {
-            addEmployee();
+        else if ((response.selected) === "add an employee") {
+            addEmployee()
         }
-        else if (response === "update employee role") {
-            updateEmployee();
+        else if ((response.selected) === "update employee role") {
+            updateEmployee()
         }
 
     })
@@ -165,6 +175,8 @@ EMPLOYEE
 
 MANAGER
 
-_____________________________________________________`
+_____________________________________________________
+
+`
 );
 init();
