@@ -4,6 +4,7 @@
  * node - https://nodejs.org/en/about
  * npm - https://www.npmjs.com/
  * inquirer - https://www.npmjs.com/package/inquirer
+ * table-printer - https://www.npmjs.com/package/console-table-printer
 
  ## Description
 
