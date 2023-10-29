@@ -42,7 +42,7 @@
  Check out my [github](https://github.com/AZurek17) page or send me a [email](mailto:andyzurek@gmail.com)
 
  ## Credits
-
+ * Tutoring Session
  * ChatGPT
  * StudyGroup
 

@@ -45,8 +45,8 @@ function addRole() {
      ])
      .then((response) => {
         
-        db.query(`INSERT INTO role (title) VALUES("${response.role_name}");`);
-        db.query(`INSERT INTO role (salary) VALUES("${response.salary}");`);
+        db.query(`INSERT INTO role (title, salary) VALUES("${response.role_name}","${response.salary}");`);
+        //db.query(`INSERT INTO role (salary) VALUES("${response.salary}");`);
         // db.query(`INSERT INTO role (department_id) VALUES("${response.department}");`);
         
         console.log(`ADDED role to database`)
@@ -70,17 +70,12 @@ function addEmployee() {
         }
      ])
      .then((response) => {
-        db.query(`INSERT INTO employee (first_name, last_name) VALUES("${response.first_name}","${response.last_name}");`)
-        
-        // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
-        // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
-        console.log(`ADDED new employee name to database`)
-     
-        db.query(`SELECT * FROM role`, function (err, results){
-            if (err){
-              console.log(err);
-            }
-            const pick = results.map((row) => row.id);
+        const nameFirst = response.first_name;
+        const nameLast = response.last_name;
+        db.promise().query(`SELECT * FROM role`).then(([results]) => {
+            console.log(results)
+
+            const roleChoices = results.map(({id,title}) => ({name: title, value: id}));
 
             inquirer
             .prompt([
@@ -88,47 +83,41 @@ function addEmployee() {
                     type: "list",
                     name: "employee_role",
                     message: "Enter employe role",
-                    choices: pick
+                    choices: roleChoices
                 }
-            ])
-            .then((response1) => {
-                db.query(`INSERT INTO employee (role_id) VALUES("${response1.employee_role}");`)
-        
-                // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
-                // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
-                console.log(`ADDED new employee role to database`)
-            })
-            
-        db.query(`SELECT * FROM employee`, function (err, results){
-            if (err){
-                console.log(err);
-            }
-            const ePick = results.map((row) => row.id);
-            inquirer
-            .prompt([
+            ]).then((response) => {
+                const roleId = response.employee_role;
+                db.promise().query(`SELECT * FROM employee`).then(([results]) => {
+                    console.log(results)
+
+                    const managerChoices = results.map(({id, first_name, last_name}) => ({name: `${first_name} ${last_name}`, value: id}));
+                
+                inquirer
+                .prompt([
                 {
                     type: "list",
-                    name: "employee_id",
+                    name: "manager_id",
                     message: "Enter employee manager",
-                    choices: ePick
+                    choices: managerChoices
                 }
-                .then((response3) => {
-                    db.query(`INSERT INTO employee (response3.manager_id) VALUES("${employee_id}");`)
-        
-                    // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
-                    // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
-                    console.log(`ADDED new employee manager to database`)
+                .then((response) =>{
+                    const newEmployee = {first_name: nameFirst, last_name: nameLast, role_id: roleId, manager_id: response.manager_id}``
+                    
+                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${newEmployee.first_name}","${newEmployee.last_name}","${newEmployee.role_id}", "${newEmployee.manager_id});`)
+                     
+                })
+                .then ((response) => {
+                    console.log(`ADDED new employee to database`)
                 })
                 ])
             })
         })
             
 })
-
         
         init()
         
-};
+})};
 
 //connect to database
 const db = mysql.createConnection(
@@ -165,19 +154,20 @@ function init() {
        //const answer = "";
 
         if ((response.selected) === "view all departments") {
-            db.query(`SELECT * FROM department`, function (err, results){
-                if (err){
-                    console.log(err);
-                }
+            db.promise().query(`SELECT * FROM department`).then(([results]) => {
                 console.table(results);
                 init();
-            });
+            }) 
+            // db.query(`SELECT * FROM department`, function (err, results){
+            //     if (err){
+            //         console.log(err);
+            //     }
+            //     console.table(results);
+            //     init();
+            // });
         }
         else if ((response.selected) === "view all roles") {
-            db.query(`SELECT * FROM role`, function (err, results){
-                if (err){
-                    console.log(err);
-                }
+            db.promise().query(`SELECT * FROM role`).then(([results]) => {
                 console.log(results)
                 init()
             })
