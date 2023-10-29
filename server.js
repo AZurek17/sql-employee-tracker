@@ -55,8 +55,7 @@ function addRole() {
 };
 
 //addEmployee questions
-function addEmployee(pick) {
-    
+function addEmployee() {
     inquirer
      .prompt ([
         {
@@ -68,28 +67,67 @@ function addEmployee(pick) {
             type: "input",
             name: "last_name",
             message: "Enter last name"
-        },
-        {
-            type: "list",
-            name: "employee_role",
-            message: "Enter employe role",
-            choices: (pick),
-
         }
-        // {
-        //     type: "list",
-        //     name: "employee_id",
-        //     message: "Enter employee manager"
-        // }
      ])
      .then((response) => {
         db.query(`INSERT INTO employee (first_name, last_name) VALUES("${response.first_name}","${response.last_name}");`)
         
         // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
         // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
-        console.log(`ADDED new employee to database`)
+        console.log(`ADDED new employee name to database`)
+     
+        db.query(`SELECT * FROM role`, function (err, results){
+            if (err){
+              console.log(err);
+            }
+            const pick = results.map((row) => row.id);
+
+            inquirer
+            .prompt([
+                {
+                    type: "list",
+                    name: "employee_role",
+                    message: "Enter employe role",
+                    choices: pick
+                }
+            ])
+            .then((response1) => {
+                db.query(`INSERT INTO employee (role_id) VALUES("${response1.employee_role}");`)
+        
+                // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
+                // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
+                console.log(`ADDED new employee role to database`)
+            })
+            
+        db.query(`SELECT * FROM employee`, function (err, results){
+            if (err){
+                console.log(err);
+            }
+            const ePick = results.map((row) => row.id);
+            inquirer
+            .prompt([
+                {
+                    type: "list",
+                    name: "employee_id",
+                    message: "Enter employee manager",
+                    choices: ePick
+                }
+                .then((response3) => {
+                    db.query(`INSERT INTO employee (response3.manager_id) VALUES("${employee_id}");`)
+        
+                    // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
+                    // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
+                    console.log(`ADDED new employee manager to database`)
+                })
+                ])
+            })
+        })
+            
+})
+
+        
         init()
-    })
+        
 };
 
 //connect to database
@@ -154,21 +192,14 @@ function init() {
             })
         }
         else if ((response.selected) === "add a department") {
-            db.query(`SELECT * FROM role`, function (err, results){
-                if (err){
-                  console.log(err);
-                }
-                const roleChoices = results.map((row) => row.role);
-                addDepartment(roleChoices);
-            });
-            
-            
+            addDepartment();
         }
         else if ((response.selected) === "add a role") {
             addRole()
         }
         else if ((response.selected) === "add an employee") {
             addEmployee()
+
         }
         else if ((response.selected) === "update employee role") {
             updateEmployee()
