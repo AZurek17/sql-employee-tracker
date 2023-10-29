@@ -78,8 +78,14 @@ function addEmployee() {
         }
      ])
      .then((response) => {
-        console.log(response)
+        const employeeAdd = (response)
+        db.query(`INSERT INTO employee (first_name) VALUES("${employeeAdd.first_name}");`)
+        db.query(`INSERT INTO employee (last_name) VALUES("${employeeAdd.last_name}");`)
+        db.query(`INSERT INTO employee (role_id) VALUES("${employeeAdd.employee_role}");`)
+        db.query(`INSERT INTO employee (manager_id) VALUES("${employeeAdd.employee_id}");`)
+        console.log(`ADDED new employee to database`)
     })
+    init();
 };
 
 //start questions
