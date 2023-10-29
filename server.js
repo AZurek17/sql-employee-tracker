@@ -14,11 +14,10 @@ function addDepartment() {
     }
     ])
     .then((response) => {
-        const departmentAdd = (response)
-        db.query(`INSERT INTO department (name)VALUES("${departmentAdd}");`)
-        console.log(`ADDED Department to database`)    
+        db.query(`INSERT INTO department (name)VALUES("${response.department}");`)
+        console.log(`ADDED Department to database`) 
+        init()   
     })
-    init();
     };
 
 //AddRole questions
@@ -34,29 +33,30 @@ function addRole() {
             type: "number",
             name: "salary",
             message: "Enter role salary"
-        },
-        {
-            type: "list",
-            name: "department",
-            message: "Pick a department",
-            choices: [
-                db.query('SHOW')
-            ]
         }
+        // {
+        //     type: "list",
+        //     name: "department",
+        //     message: "Pick a department",
+        //     choices: [
+        //         //db.query('SHOW')
+        //     ]
+        // }
      ])
      .then((response) => {
-        const roleAdd = (response);
-        db.query(`INSERT INTO role (title) VALUES("${roleAdd.role_name}");`)
-        db.query(`INSERT INTO role (salary) VALUES("${roleAdd.salary}");`)
-        db.query(`INSERT INTO role (department_id) VALUES("${roleAdd.department}");`)
+        
+        db.query(`INSERT INTO role (title) VALUES("${response.role_name}");`);
+        db.query(`INSERT INTO role (salary) VALUES("${response.salary}");`);
+        // db.query(`INSERT INTO role (department_id) VALUES("${response.department}");`);
         
         console.log(`ADDED role to database`)
+        init()
     })
-    init();
 };
 
 //addEmployee questions
-function addEmployee() {
+function addEmployee(pick) {
+    
     inquirer
      .prompt ([
         {
@@ -72,23 +72,24 @@ function addEmployee() {
         {
             type: "list",
             name: "employee_role",
-            message: "Enter employe role"
-        },
-        {
-            type: "list",
-            name: "employee_id",
-            message: "Enter employe manager"
+            message: "Enter employe role",
+            choices: (pick),
+
         }
+        // {
+        //     type: "list",
+        //     name: "employee_id",
+        //     message: "Enter employee manager"
+        // }
      ])
      .then((response) => {
-        const employeeAdd = (response)
-        db.query(`INSERT INTO employee (first_name) VALUES("${employeeAdd.first_name}");`)
-        db.query(`INSERT INTO employee (last_name) VALUES("${employeeAdd.last_name}");`)
-        db.query(`INSERT INTO employee (role_id) VALUES("${employeeAdd.employee_role}");`)
-        db.query(`INSERT INTO employee (manager_id) VALUES("${employeeAdd.employee_id}");`)
+        db.query(`INSERT INTO employee (first_name, last_name) VALUES("${response.first_name}","${response.last_name}");`)
+        
+        // db.query(`INSERT INTO employee (role_id) VALUES("${response.employee_role}");`)
+        // db.query(`INSERT INTO employee (manager_id) VALUES("${r.employee_id}");`)
         console.log(`ADDED new employee to database`)
+        init()
     })
-    init();
 };
 
 //connect to database
@@ -144,16 +145,24 @@ function init() {
             })
         }
         else if ((response.selected) === "view all employees") {
-            if (err){
-                console.log(err);
-            }
             db.query(`SELECT * FROM employee`, function (err, results){
+                if (err){
+                    console.log(err);
+                }
                 console.table(results)
                 init()
             })
         }
         else if ((response.selected) === "add a department") {
-            addDepartment()
+            db.query(`SELECT * FROM role`, function (err, results){
+                if (err){
+                  console.log(err);
+                }
+                const roleChoices = results.map((row) => row.role);
+                addDepartment(roleChoices);
+            });
+            
+            
         }
         else if ((response.selected) === "add a role") {
             addRole()
