@@ -1,10 +1,12 @@
 # sql-employee-tracker ![GitHub License Badge](https://img.shields.io/badge/License-MIT-yellow)
 
+![sql-employee-tracker](./images/Screenshot.png)
+
 ## Technology Used:
  * node - https://nodejs.org/en/about
  * npm - https://www.npmjs.com/
  * inquirer - https://www.npmjs.com/package/inquirer
- * table-printer - https://www.npmjs.com/package/console-table-printer
+ * console.table - https://www.npmjs.com/package/console.table
  * mysql2 - https://www.npmjs.com/package/mysql2
 
  ## Description
@@ -21,6 +23,10 @@
 
 ## Installation
 
+This application requires inquire, mysql2, and console.table.  
+* To install all dependences, run: npm install
+* To start the program, run: node server.js
+
 ## Usage
 
 ## License
@@ -34,6 +40,8 @@
  ![GitHub License Badge](https://img.shields.io/badge/License-MIT-yellow)
 
  ## Tests
+ 
+ This application does not have any tests
 
  ## Contributing
 
