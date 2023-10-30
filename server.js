@@ -1,7 +1,50 @@
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
 const cTable = require('console.table');
+//Update employee
 
+function updateEmployee(){
+
+    db.promise().query(`SELECT * FROM employee`).then(([results]) => {
+        const employeeChoices = results.map(({id, first_name, last_name}) => ({name: `${first_name} ${last_name}`, value: id}));
+                
+        inquirer
+        .prompt([
+        {
+            type: "list",
+            name: "employee_id",
+            message: "Select an employee to update",
+            choices: employeeChoices,
+                   
+        }
+        ]).then((response) => {
+            const employee = response.employee_id
+            db.promise().query(`SELECT * FROM role`).then(([results]) => {
+                // console.log(results)
+                const roleChoices = results.map(({id, title}) => ({name: title, value: id}));
+    
+                inquirer
+                .prompt([
+                    {
+                        type: "list",
+                        name: "employee_role",
+                        message: "Enter new role for employee",
+                        choices: roleChoices     
+                    }
+                ]).then((response) => {
+                    const newRole = response.employee_role;
+
+                    db.promise().query(
+                        `UPDATE employee SET role_id = ? WHERE id = ?`,
+                        [newRole, employee]
+                    )
+                    console.log(`ADDED new employee to database`)
+                    init()
+                })
+            })
+        })
+    })    
+}
 
 //AddDepartment questions
 function addDepartment() {
