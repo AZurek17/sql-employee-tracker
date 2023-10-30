@@ -73,7 +73,7 @@ function addEmployee() {
         const nameFirst = response.first_name;
         const nameLast = response.last_name;
         db.promise().query(`SELECT * FROM role`).then(([results]) => {
-            console.log(results)
+            // console.log(results)
 
             const roleChoices = results.map(({id,title}) => ({name: title, value: id}));
 
@@ -84,11 +84,12 @@ function addEmployee() {
                     name: "employee_role",
                     message: "Enter employe role",
                     choices: roleChoices
+                            
                 }
             ]).then((response) => {
                 const roleId = response.employee_role;
                 db.promise().query(`SELECT * FROM employee`).then(([results]) => {
-                    console.log(results)
+                    // console.log(results)
 
                     const managerChoices = results.map(({id, first_name, last_name}) => ({name: `${first_name} ${last_name}`, value: id}));
                 
@@ -98,26 +99,25 @@ function addEmployee() {
                     type: "list",
                     name: "manager_id",
                     message: "Enter employee manager",
-                    choices: managerChoices
+                    choices: managerChoices,
+                           
                 }
-                .then((response) =>{
-                    const newEmployee = {first_name: nameFirst, last_name: nameLast, role_id: roleId, manager_id: response.manager_id}``
-                    
-                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${newEmployee.first_name}","${newEmployee.last_name}","${newEmployee.role_id}", "${newEmployee.manager_id});`)
-                     
-                })
-                .then ((response) => {
+                ]).then((response) => {
+
+                    const newEmployee = {first_name: nameFirst, last_name: nameLast, role_id: roleId, manager_id: response.manager_id}
+                
+                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${nameFirst}","${nameLast}","${roleId}","${response.manager_id}");`)
                     console.log(`ADDED new employee to database`)
+                    init()
                 })
-                ])
+                
             })
-        })
             
+        })    
+    })   
 })
-        
-        init()
-        
-})};
+
+}
 
 //connect to database
 const db = mysql.createConnection(
@@ -150,21 +150,12 @@ function init() {
         },
     ])
     .then((response) => {
-        // console.log(response)
-       //const answer = "";
 
         if ((response.selected) === "view all departments") {
             db.promise().query(`SELECT * FROM department`).then(([results]) => {
                 console.table(results);
                 init();
             }) 
-            // db.query(`SELECT * FROM department`, function (err, results){
-            //     if (err){
-            //         console.log(err);
-            //     }
-            //     console.table(results);
-            //     init();
-            // });
         }
         else if ((response.selected) === "view all roles") {
             db.promise().query(`SELECT * FROM role`).then(([results]) => {
@@ -173,10 +164,7 @@ function init() {
             })
         }
         else if ((response.selected) === "view all employees") {
-            db.query(`SELECT * FROM employee`, function (err, results){
-                if (err){
-                    console.log(err);
-                }
+            db.promise().query(`SELECT * FROM employee`).then(([results]) => {
                 console.table(results)
                 init()
             })
@@ -185,16 +173,14 @@ function init() {
             addDepartment();
         }
         else if ((response.selected) === "add a role") {
-            addRole()
+            addRole();
         }
         else if ((response.selected) === "add an employee") {
-            addEmployee()
-
+            addEmployee();
         }
         else if ((response.selected) === "update employee role") {
-            updateEmployee()
+            updateEmployee();
         }
-
     })
 }
 
