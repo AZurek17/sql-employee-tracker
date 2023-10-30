@@ -34,25 +34,35 @@ function addRole() {
             name: "salary",
             message: "Enter role salary"
         }
-        // {
-        //     type: "list",
-        //     name: "department",
-        //     message: "Pick a department",
-        //     choices: [
-        //         //db.query('SHOW')
-        //     ]
-        // }
      ])
      .then((response) => {
-        
-        db.query(`INSERT INTO role (title, salary) VALUES("${response.role_name}","${response.salary}");`);
-        //db.query(`INSERT INTO role (salary) VALUES("${response.salary}");`);
-        // db.query(`INSERT INTO role (department_id) VALUES("${response.department}");`);
-        
-        console.log(`ADDED role to database`)
-        init()
-    })
-};
+        const roleName = response.role_name;
+        const roleSalary = response.salary;
+        db.promise().query(`SELECT * FROM department`).then(([results]) => {
+            // console.log(results)
+
+            const departmentChoices = results.map(({id,name}) => ({name: name, value: id}));
+
+            inquirer
+            .prompt([
+                {
+                    type: "list",
+                    name: "department",
+                    message: "employee department",
+                    choices: departmentChoices         
+                }
+            ]).then((response) => {
+
+            db.promise().query(`INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)`, [roleName, roleSalary,response.department])
+              .then(() =>{
+                
+              console.log(`ADDED role to database`)
+              init()
+              })
+            })
+        })
+    }
+)}
 
 //addEmployee questions
 function addEmployee() {
