@@ -212,12 +212,18 @@ function init() {
         }
         else if ((response.selected) === "view all roles") {
             db.promise().query(`SELECT * FROM role`).then(([results]) => {
-                console.log(results)
+                console.table(results)
                 init()
             })
         }
         else if ((response.selected) === "view all employees") {
-            db.promise().query(`SELECT * FROM employee`).then(([results]) => {
+            db.promise().query(`
+            SELECT employee.id, employee.first_name, employee.last_name, department.name AS Department, role.title, role.salary, employee.manager_id AS Manager
+            FROM employee
+            LEFT JOIN role ON employee.role_id = role.id
+            LEFT JOIN department ON role.department_id = department.id
+            `
+            ).then(([results]) => {
                 console.table(results)
                 init()
             })
