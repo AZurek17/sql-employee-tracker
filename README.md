@@ -1,5 +1,7 @@
 # sql-employee-tracker ![GitHub License Badge](https://img.shields.io/badge/License-MIT-yellow)
 
+[Link to Walkthrough Video](https://watch.screencastify.com/v/6QiUleTCpNdZ3OPlpNIJ)
+
 ![sql-employee-tracker](./images/Screenshot.png)
 
 ## Technology Used:
@@ -10,6 +12,8 @@
  * mysql2 - https://www.npmjs.com/package/mysql2
 
  ## Description
+ 
+ This application is for a business owner who can veiw and manage the departments, roles, and employees, to plan and organize a business. 
 
  ## Table of Contents
   
@@ -28,6 +32,39 @@ This application requires inquire, mysql2, and console.table.
 * To start the program, run: node server.js
 
 ## Usage
+
+when the application is started.  The user is prompted with questions: view all departments, view all roles, veiw all employees, add a department, add a role, add an employee, and update an employee role. This was accomplished using inquirer and mysql.  Below is a code snippet.
+
+    inquirer
+        .prompt ([
+            {
+                type: "list",
+                message: "What would you like to do?",
+                name: "selected",
+                choices: [
+                    "view all departments",
+                    "view all roles",
+                    "view all employees",
+                    "add a department",
+                    "add a role",
+                    "add an employee",
+                    "update employee role"
+                ],
+            },
+        ])
+
+SQL commands where used to create View all employees: 
+
+    db.promise().query(`
+                SELECT employee.id, employee.first_name, employee.last_name, department.name AS Department, role.title, role.salary, employee.manager_id AS Manager
+                FROM employee
+                LEFT JOIN role ON employee.role_id = role.id
+                LEFT JOIN department ON role.department_id = department.id
+                `
+                ).then(([results]) => {
+                    console.table(results)
+                })
+
 
 ## License
 
